@@ -34,7 +34,7 @@ def get_cookies():
     try:
         driver = webdriver.Chrome(service=service, options=options)
         driver.get("https://gmgn.ai")
-        time.sleep(15)  # Wait for Cloudflare challenge
+        time.sleep(30)  # Wait for Cloudflare challenge
 
         # 🛑 Save a screenshot to see what the bot is looking at
         driver.save_screenshot("/app/debug_screenshot.png")
