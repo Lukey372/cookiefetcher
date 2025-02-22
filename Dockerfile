@@ -11,8 +11,8 @@ RUN pip install -r requirements.txt
 RUN apt-get update && apt-get install -y \
     wget \
     unzip \
-    xvfb \
     curl \
+    xvfb \
     libxi6 \
     libgconf-2-4 \
     libnss3 \
@@ -33,12 +33,17 @@ RUN wget -q -O google-chrome.deb https://dl.google.com/linux/direct/google-chrom
     && dpkg -i google-chrome.deb || apt-get -fy install \
     && rm google-chrome.deb
 
-# Download and install Chromedriver properly
+# Install ChromeDriver manually
 RUN wget -q -O chromedriver.zip https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip \
     && unzip chromedriver.zip \
     && chmod +x chromedriver \
     && mv chromedriver /usr/local/bin/chromedriver \
     && rm chromedriver.zip
+
+# Set ENV paths to ensure correct execution
+ENV PATH="/usr/local/bin:$PATH"
+ENV CHROMEDRIVER_PATH="/usr/local/bin/chromedriver"
+ENV GOOGLE_CHROME_PATH="/usr/bin/google-chrome-stable"
 
 # Start Flask API
 COPY . .
