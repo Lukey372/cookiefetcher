@@ -1,5 +1,5 @@
 from flask import Flask, jsonify
-from fetch_cookies import get_cookies
+from app.fetch_cookies import get_cookies
 
 app = Flask(__name__)
 
