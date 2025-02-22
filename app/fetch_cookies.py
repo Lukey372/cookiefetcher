@@ -1,48 +1,37 @@
 import undetected_chromedriver as uc
 import time
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
 
 def get_cookies():
-    """
-    Fetch Cloudflare cookies using an advanced (fortified) headless Chrome.
-    """
+    logging.debug("Starting get_cookies()")
     options = uc.ChromeOptions()
-    # Use these extra arguments for stealth:
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--disable-blink-features=AutomationControlled")
-    # Mimic a normal browser window size
     options.add_argument("--window-size=1920,1080")
-    # Use headless mode but note: sometimes running in headless mode is more detectable.
-    # If you experience issues, try running without headless mode.
     options.add_argument("--headless=new")
     options.add_argument("--disable-infobars")
-    # Set a realistic user agent
     options.add_argument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
                          "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36")
-    
-    # Additional experimental flags – see https://www.zenrows.com/blog/bypass-cloudflare#fortified-headless-browsers
-    options.add_argument("--disable-blink-features=AutomationControlled")
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
     options.add_experimental_option('useAutomationExtension', False)
     
     try:
+        logging.debug("Launching Chrome driver")
         driver = uc.Chrome(options=options)
-        # Execute a little JS to delete navigator.webdriver flag.
         driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
-        # You might also inject a stealth script here if needed
-        
+        logging.debug("Navigating to https://gmgn.ai")
         driver.get("https://gmgn.ai")
-        # Wait long enough for Cloudflare's challenge to complete.
-        time.sleep(15)
-        # For debugging, take a screenshot:
+        time.sleep(20)  # increased sleep time for the challenge
         driver.save_screenshot("/app/debug_screenshot.png")
         cookies = driver.get_cookies()
         driver.quit()
-        
-        # Return only Cloudflare clearance cookies
+        logging.debug("Cookies fetched, processing them...")
         return {cookie["name"]: cookie["value"] for cookie in cookies if cookie["name"] in ["cf_clearance", "__cf_bm"]}
     except Exception as e:
-        print(f"❌ ERROR: {e}")
+        logging.error(f"Error fetching cookies: {e}", exc_info=True)
         return {}
 
 if __name__ == "__main__":
