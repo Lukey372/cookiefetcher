@@ -33,7 +33,7 @@ def get_cookies():
     try:
         driver = webdriver.Chrome(service=service, options=options)
         driver.get("https://gmgn.ai")
-        time.sleep(5)  # Wait for Cloudflare challenge
+        time.sleep(15)  # Wait for Cloudflare challenge
         cookies = driver.get_cookies()
         driver.quit()
         return {cookie["name"]: cookie["value"] for cookie in cookies if cookie["name"] in ["cf_clearance", "__cf_bm"]}
