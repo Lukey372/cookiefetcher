@@ -26,18 +26,25 @@ def get_cookies():
     options.add_argument("--disable-gpu")
     options.add_argument("--disable-blink-features=AutomationControlled")
     options.add_argument("--remote-debugging-port=9222")
+    options.add_argument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36")
 
     # ✅ Use manually detected ChromeDriver path
     service = Service(chromedriver_path)
-    
+
     try:
         driver = webdriver.Chrome(service=service, options=options)
         driver.get("https://gmgn.ai")
         time.sleep(15)  # Wait for Cloudflare challenge
+
+        # 🛑 Save a screenshot to see what the bot is looking at
+        driver.save_screenshot("/app/debug_screenshot.png")
+
         cookies = driver.get_cookies()
         driver.quit()
+
         return {cookie["name"]: cookie["value"] for cookie in cookies if cookie["name"] in ["cf_clearance", "__cf_bm"]}
-    
+
     except Exception as e:
         print(f"❌ ERROR: {e}")
         return {}
+
