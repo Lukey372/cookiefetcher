@@ -28,9 +28,9 @@ RUN apt-get update && apt-get install -y \
     libgtk-3-0 \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Chrome
+# Install Chrome correctly
 RUN wget -q -O google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
-    && dpkg -i google-chrome.deb || apt-get -fy install \
+    && apt-get update && apt-get install -y ./google-chrome.deb \
     && rm google-chrome.deb
 
 # Install ChromeDriver manually
