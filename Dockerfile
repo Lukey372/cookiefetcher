@@ -28,27 +28,21 @@ RUN apt-get update && apt-get install -y \
     libgtk-3-0 \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Chrome correctly
+# ✅ Install Chrome
 RUN wget -q -O google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
     && apt-get update && apt-get install -y ./google-chrome.deb \
     && rm google-chrome.deb
 
-# Install ChromeDriver manually
+# ✅ Install ChromeDriver
 RUN wget -q -O chromedriver.zip https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip \
     && unzip chromedriver.zip \
     && chmod +x chromedriver \
     && mv chromedriver /usr/local/bin/chromedriver \
     && rm chromedriver.zip
 
- # Ensure Chrome and Chromedriver are installed
+# ✅ Ensure Chrome & Chromedriver Work
 RUN which google-chrome && google-chrome --version
 RUN which chromedriver && chromedriver --version
-
-
-# Set ENV paths to ensure correct execution
-ENV PATH="/usr/local/bin:$PATH"
-ENV CHROMEDRIVER_PATH="/usr/local/bin/chromedriver"
-ENV GOOGLE_CHROME_PATH="/usr/bin/google-chrome-stable"
 
 # Start Flask API
 COPY . .
