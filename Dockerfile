@@ -40,6 +40,11 @@ RUN wget -q -O chromedriver.zip https://chromedriver.storage.googleapis.com/114.
     && mv chromedriver /usr/local/bin/chromedriver \
     && rm chromedriver.zip
 
+ # Ensure Chrome and Chromedriver are installed
+RUN which google-chrome && google-chrome --version
+RUN which chromedriver && chromedriver --version
+
+
 # Set ENV paths to ensure correct execution
 ENV PATH="/usr/local/bin:$PATH"
 ENV CHROMEDRIVER_PATH="/usr/local/bin/chromedriver"
