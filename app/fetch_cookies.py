@@ -1,4 +1,4 @@
-import undetected_chromedriver.v2 as uc
+import undetected_chromedriver as uc
 import time
 
 def get_cookies():
