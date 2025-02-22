@@ -7,7 +7,7 @@ WORKDIR /app
 COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 
-# Install Chrome dependencies
+# Install Chrome and dependencies
 RUN apt-get update && apt-get install -y \
     wget \
     unzip \
@@ -28,19 +28,21 @@ RUN apt-get update && apt-get install -y \
     libgtk-3-0 \
     && rm -rf /var/lib/apt/lists/*
 
-# ✅ Install Chrome
+# ✅ Install Latest Google Chrome
 RUN wget -q -O google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
-    && apt-get update && apt-get install -y ./google-chrome.deb \
+    && apt-get install -y ./google-chrome.deb \
     && rm google-chrome.deb
 
-# ✅ Install ChromeDriver
-RUN wget -q -O chromedriver.zip https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip \
+# ✅ Automatically Download Matching ChromeDriver Version
+RUN CHROME_VERSION=$(google-chrome --version | awk '{print $3}' | cut -d '.' -f1) \
+    && CHROMEDRIVER_URL=$(curl -s "https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json" | jq -r --arg VER "$CHROME_VERSION" '.versions[] | select(.version | startswith($VER)) | .downloads.chromedriver[] | select(.platform == "linux64").url' | head -n 1) \
+    && wget -q -O chromedriver.zip "$CHROMEDRIVER_URL" \
     && unzip chromedriver.zip \
     && chmod +x chromedriver \
     && mv chromedriver /usr/local/bin/chromedriver \
     && rm chromedriver.zip
 
-# ✅ Ensure Chrome & Chromedriver Work
+# ✅ Ensure Chrome and Chromedriver Are Installed Correctly
 RUN which google-chrome && google-chrome --version
 RUN which chromedriver && chromedriver --version
 
