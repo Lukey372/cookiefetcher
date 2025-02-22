@@ -9,10 +9,10 @@ RUN pip install -r requirements.txt
 
 # Install Chrome dependencies
 RUN apt-get update && apt-get install -y \
-    unzip \
     wget \
-    curl \
+    unzip \
     xvfb \
+    curl \
     libxi6 \
     libgconf-2-4 \
     libnss3 \
@@ -28,15 +28,17 @@ RUN apt-get update && apt-get install -y \
     libgtk-3-0 \
     && rm -rf /var/lib/apt/lists/*
 
-# Download & Install Chrome
-RUN wget -qO- https://dl.google.com/linux/linux_signing_key.pub | apt-key add - \
-    && echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
-    && apt-get update && apt-get install -y google-chrome-stable
+# Install Chrome
+RUN wget -q -O google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
+    && dpkg -i google-chrome.deb || apt-get -fy install \
+    && rm google-chrome.deb
 
-# Download ChromeDriver
-RUN wget -O /usr/local/bin/chromedriver https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip \
-    && unzip /usr/local/bin/chromedriver -d /usr/local/bin/ \
-    && chmod +x /usr/local/bin/chromedriver
+# Download and install Chromedriver properly
+RUN wget -q -O chromedriver.zip https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip \
+    && unzip chromedriver.zip \
+    && chmod +x chromedriver \
+    && mv chromedriver /usr/local/bin/chromedriver \
+    && rm chromedriver.zip
 
 # Start Flask API
 COPY . .
