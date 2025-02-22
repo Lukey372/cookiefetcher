@@ -13,7 +13,7 @@ def get_cookies():
     options.add_argument("--disable-blink-features=AutomationControlled")
     
     # Manually set Chrome binary path
-    options.binary_location = "/usr/bin/google-chrome-stable"
+    options.binary_location = "/usr/bin/google-chrome"
 
     # Manually specify Chromedriver path
     chromedriver_path = "/usr/local/bin/chromedriver"
