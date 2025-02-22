@@ -13,6 +13,7 @@ RUN apt-get update && apt-get install -y \
     unzip \
     curl \
     gnupg \
+    jq \
     libnss3 \
     libx11-xcb1 \
     libxcomposite1 \
@@ -33,18 +34,20 @@ RUN wget -q -O google-chrome.deb https://dl.google.com/linux/direct/google-chrom
     && apt-get install -y ./google-chrome.deb \
     && rm google-chrome.deb
 
-# ✅ Automatically Download Matching ChromeDriver Version
-RUN CHROME_VERSION=$(google-chrome --version | awk '{print $3}' | cut -d '.' -f1) \
-    && CHROMEDRIVER_URL=$(curl -s "https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json" | jq -r --arg VER "$CHROME_VERSION" '.versions[] | select(.version | startswith($VER)) | .downloads.chromedriver[] | select(.platform == "linux64").url' | head -n 1) \
-    && wget -q -O chromedriver.zip "$CHROMEDRIVER_URL" \
+# ✅ Ensure Chrome is Installed Correctly
+RUN google-chrome --version
+
+# ✅ Install the Correct Version of ChromeDriver
+RUN CHROME_VERSION=$(google-chrome --version | awk '{print $3}') \
+    && CHROMEDRIVER_VERSION=$(curl -s https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json | jq -r --arg VER "$CHROME_VERSION" '.versions[] | select(.version==$VER) | .downloads.chromedriver[] | select(.platform == "linux64").url' | head -n 1) \
+    && wget -q -O chromedriver.zip "$CHROMEDRIVER_VERSION" \
     && unzip chromedriver.zip \
     && chmod +x chromedriver \
     && mv chromedriver /usr/local/bin/chromedriver \
     && rm chromedriver.zip
 
-# ✅ Ensure Chrome and Chromedriver Are Installed Correctly
-RUN which google-chrome && google-chrome --version
-RUN which chromedriver && chromedriver --version
+# ✅ Ensure ChromeDriver is Installed Correctly
+RUN chromedriver --version
 
 # Start Flask API
 COPY . .
