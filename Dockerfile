@@ -46,4 +46,4 @@ RUN which chromedriver && chromedriver --version
 
 # Start Flask API
 COPY . .
-CMD ["gunicorn", "-b", "0.0.0.0:5000", "app.server:app"]
+CMD exec gunicorn -b 0.0.0.0:5000 app.server:app --workers=1 --threads=2 --timeout 120 --log-level debug
