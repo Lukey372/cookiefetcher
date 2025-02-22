@@ -29,24 +29,25 @@ RUN apt-get update && apt-get install -y \
     xdg-utils \
     && rm -rf /var/lib/apt/lists/*
 
-# ✅ Install Latest Google Chrome
+# ✅ Install Google Chrome (Latest Version)
 RUN wget -q -O google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
     && apt-get install -y ./google-chrome.deb \
     && rm google-chrome.deb
 
-# ✅ Ensure Chrome is Installed Correctly
+# ✅ Confirm Chrome Installation
 RUN google-chrome --version
 
-# ✅ Install the Correct Version of ChromeDriver
-RUN CHROME_VERSION=$(google-chrome --version | awk '{print $3}') \
-    && CHROMEDRIVER_VERSION=$(curl -s https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json | jq -r --arg VER "$CHROME_VERSION" '.versions[] | select(.version==$VER) | .downloads.chromedriver[] | select(.platform == "linux64").url' | head -n 1) \
+# ✅ Install ChromeDriver (Matching Chrome Version)
+RUN export CHROME_VERSION=$(google-chrome --version | awk '{print $3}') \
+    && CHROMEDRIVER_VERSION=$(curl -s https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json | jq -r --arg VER "$CHROME_VERSION" '.versions[] | select(.version | startswith($VER)) | .downloads.chromedriver[] | select(.platform == "linux64").url' | head -n 1) \
+    && if [ -z "$CHROMEDRIVER_VERSION" ]; then echo "❌ ChromeDriver URL not found! Using fallback version"; CHROMEDRIVER_VERSION="https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/$CHROME_VERSION/linux64/chromedriver-linux64.zip"; fi \
     && wget -q -O chromedriver.zip "$CHROMEDRIVER_VERSION" \
     && unzip chromedriver.zip \
     && chmod +x chromedriver \
     && mv chromedriver /usr/local/bin/chromedriver \
     && rm chromedriver.zip
 
-# ✅ Ensure ChromeDriver is Installed Correctly
+# ✅ Confirm ChromeDriver Installation
 RUN chromedriver --version
 
 # Start Flask API
