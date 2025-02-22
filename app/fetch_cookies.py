@@ -11,11 +11,11 @@ def get_cookies():
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--disable-gpu")
     options.add_argument("--disable-blink-features=AutomationControlled")
-    
-    # Manually set Chrome binary path
+
+    # ✅ Use the correct Chrome binary path
     options.binary_location = "/usr/bin/google-chrome"
 
-    # Manually specify Chromedriver path
+    # ✅ Use the correct Chromedriver path
     chromedriver_path = "/usr/local/bin/chromedriver"
     service = Service(chromedriver_path)
 
