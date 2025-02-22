@@ -7,25 +7,25 @@ WORKDIR /app
 COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 
-# Install Chrome and dependencies
+# ✅ Install necessary system dependencies
 RUN apt-get update && apt-get install -y \
     wget \
     unzip \
     curl \
-    xvfb \
-    libxi6 \
-    libgconf-2-4 \
+    gnupg \
     libnss3 \
     libx11-xcb1 \
     libxcomposite1 \
     libxcursor1 \
     libxdamage1 \
-    libxfixes3 \
     libxrandr2 \
     libasound2 \
     libatk1.0-0 \
     libgbm1 \
     libgtk-3-0 \
+    fonts-liberation \
+    libvulkan1 \
+    xdg-utils \
     && rm -rf /var/lib/apt/lists/*
 
 # ✅ Install Latest Google Chrome
